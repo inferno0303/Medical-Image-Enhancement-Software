@@ -1,0 +1,20 @@
+# all hidden files
+.*
+
+# idea
+.idea
+
+# build & dist
+build
+dist
+
+# python virtualenv
+virtualenv
+venv
+
+# python cache
+__pycache__
+*.pyc
+
+# exclude .gitignore
+!.gitignore
