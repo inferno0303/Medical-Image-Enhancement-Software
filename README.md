@@ -6,12 +6,12 @@
 
 ---
 > createTime: 2023-11-13  
-> updateTime: 2023-11-13  
+> updateTime: 2023-11-27  
 ---
 
 ## 介绍
 
-**基于pydicom与cv2的PET医学图像增强系统**
+软件名称：**基于pydicom与cv2的PET医学图像增强系统**
 
 ### 软件功能
 
@@ -42,22 +42,48 @@
 - 图像增强处理
 - 结果展示
 
-## 软件架构
+## 技术
+
+### 软件技术架构
 
 - PyQt6
 - OpenCV
 - PyDICOM
 
-## 软件工程目录结构
+### 运行方法
 
-`main.py`：主程序
+```shell
+# 创建python虚拟环境
+python -m virtualenv venv
+
+# 在当前终端会话中启用python虚拟环境（在cmd命令提示符下）
+venv\Scripts\activate
+
+# 安装所需依赖
+pip install -r requirements.txt
+
+# 如果要把当前已安装的pip包写入到文本文件
+pip freeze > requirements.txt
+
+# 使用pyuic，这要求安装PyQt6
+python -m PyQt6.uic.pyuic .\src\widgets\widget_01.ui -o .\src\widgets\widget_01.py
+```
+
+### 目录结构
+
+`src/main.py`：主程序
+
+`src/widgets/`：QtWidget控件实例
 
 `build.py`：构建脚本
-
-`widgets/`：QtWidget控件实例
 
 ## 更新日志
 
 ### 2023-11-13
 
 - 初始发布
+
+### 2023-11-27
+
+- 集成 PyQt6-tools 到项目中，方便使用
+- 新增计算灰度直方图功能
