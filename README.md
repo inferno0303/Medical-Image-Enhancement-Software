@@ -77,6 +77,8 @@ python -m PyQt6.uic.pyuic .\src\widgets\widget_01.ui -o .\src\widgets\widget_01.
 
 `build.py`：构建脚本
 
+`qt6-tools`：Qt6工具
+
 ## 更新日志
 
 ### 2023-11-13
@@ -87,3 +89,10 @@ python -m PyQt6.uic.pyuic .\src\widgets\widget_01.ui -o .\src\widgets\widget_01.
 
 - 集成 PyQt6-tools 到项目中，方便使用
 - 新增计算灰度直方图功能
+
+### 2023-11-30
+
+- 新增：直方图均衡化功能
+- 修复：requirement.txt
+- 修复：build.py构建脚本
+- 第一次交付
