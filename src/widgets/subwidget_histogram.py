@@ -42,9 +42,7 @@ class WidgetHistogram(QWidget):
         """
         self.ui.pushButton_histogramEqualize.clicked.connect(self.histogram_equ)
 
-        """
-        计算原图信息
-        """
+        # 计算原图信息
         self.height, self.width, self.channels = image.shape
         if self.channels == 3:
             self.original_image_rgb = image.copy()
@@ -54,32 +52,27 @@ class WidgetHistogram(QWidget):
         else:
             return -1
 
-        """
-        显示原图
-        """
+        # 显示原图
         if self.channels == 3:
-            _qimage = QImage(self.original_image_rgb, self.width, self.height, QImage.Format.Format_RGB888)
+            _q_image = QImage(self.original_image_rgb, self.width, self.height, QImage.Format.Format_RGB888)
         elif self.channels == 1:
-            _qimage = QImage(self.original_image_gray, self.width, self.height, QImage.Format.Format_Grayscale8)
+            _q_image = QImage(self.original_image_gray, self.width, self.height, QImage.Format.Format_Grayscale8)
         else:
             return -1
         if self.ui.label_original_image.width() > self.ui.label_original_image.height():
-            _qimage = _qimage.scaledToHeight(self.ui.label_original_image.height())
+            _q_image = _q_image.scaledToHeight(self.ui.label_original_image.height())
         else:
-            _qimage = _qimage.scaledToWidth(self.ui.label_original_image.width())
-        self.ui.label_original_image.setPixmap(QPixmap.fromImage(_qimage))
+            _q_image = _q_image.scaledToWidth(self.ui.label_original_image.width())
+        self.ui.label_original_image.setPixmap(QPixmap.fromImage(_q_image))
 
-        """
-        计算直方图
-        """
-        # Y通道直方图
+        # 计算Y通道直方图
         self.histogram_y_channel = cv2.calcHist([self.original_image_gray], [0], None, [256], [0, 256])
         cv2.normalize(self.histogram_y_channel, self.histogram_y_channel, 0, 1024, cv2.NORM_MINMAX)
         self.histogram_y_image = np.zeros((1024, 1024, 3), dtype=np.uint8)
         for i, value in enumerate(self.histogram_y_channel):
             cv2.line(self.histogram_y_image, (i * 4, 1024), (i * 4, 1024 - int(value)), (255, 255, 255), 4)
-        _qimage = QImage(self.histogram_y_image, 1024, 1024, QImage.Format.Format_RGB888).scaledToWidth(200)
-        self.ui.label_y_channel_hist.setPixmap(QPixmap.fromImage(_qimage))
+        _q_image = QImage(self.histogram_y_image, 1024, 1024, QImage.Format.Format_RGB888).scaledToWidth(200)
+        self.ui.label_y_channel_hist.setPixmap(QPixmap.fromImage(_q_image))
 
         # 彩色图还要绘制RGB通道的直方图
         if self.channels == 3:
@@ -89,8 +82,8 @@ class WidgetHistogram(QWidget):
             self.histogram_r_image = np.zeros((1024, 1024, 3), dtype=np.uint8)
             for i, value in enumerate(self.histogram_r_channel):
                 cv2.line(self.histogram_r_image, (i * 4, 1024), (i * 4, 1024 - int(value)), (100, 100, 255), 4)
-            _qimage = QImage(self.histogram_r_image, 1024, 1024, QImage.Format.Format_RGB888).scaledToWidth(200)
-            self.ui.label_r_channel_hist.setPixmap(QPixmap.fromImage(_qimage))
+            _q_image = QImage(self.histogram_r_image, 1024, 1024, QImage.Format.Format_RGB888).scaledToWidth(200)
+            self.ui.label_r_channel_hist.setPixmap(QPixmap.fromImage(_q_image))
 
             # G通道直方图
             self.histogram_g_channel = cv2.calcHist([self.original_image_rgb], [1], None, [256], [0, 256])
@@ -98,8 +91,8 @@ class WidgetHistogram(QWidget):
             self.histogram_g_image = np.zeros((1024, 1024, 3), dtype=np.uint8)
             for i, value in enumerate(self.histogram_g_channel):
                 cv2.line(self.histogram_g_image, (i * 4, 1024), (i * 4, 1024 - int(value)), (100, 255, 100), 4)
-            _qimage = QImage(self.histogram_g_image, 1024, 1024, QImage.Format.Format_RGB888).scaledToWidth(200)
-            self.ui.label_g_channel_hist.setPixmap(QPixmap.fromImage(_qimage))
+            _q_image = QImage(self.histogram_g_image, 1024, 1024, QImage.Format.Format_RGB888).scaledToWidth(200)
+            self.ui.label_g_channel_hist.setPixmap(QPixmap.fromImage(_q_image))
 
             # B通道直方图
             self.histogram_b_channel = cv2.calcHist([self.original_image_rgb], [2], None, [256], [0, 256])
@@ -107,8 +100,8 @@ class WidgetHistogram(QWidget):
             self.histogram_b_image = np.zeros((1024, 1024, 3), dtype=np.uint8)
             for i, value in enumerate(self.histogram_b_channel):
                 cv2.line(self.histogram_b_image, (i * 4, 1024), (i * 4, 1024 - int(value)), (255, 100, 100), 4)
-            _qimage = QImage(self.histogram_b_image, 1024, 1024, QImage.Format.Format_RGB888).scaledToWidth(200)
-            self.ui.label_b_channel_hist.setPixmap(QPixmap.fromImage(_qimage))
+            _q_image = QImage(self.histogram_b_image, 1024, 1024, QImage.Format.Format_RGB888).scaledToWidth(200)
+            self.ui.label_b_channel_hist.setPixmap(QPixmap.fromImage(_q_image))
         else:
             return -1
         return 0
@@ -138,8 +131,8 @@ class WidgetHistogram(QWidget):
             self.equalized_image = equalized_image_rgb.copy()
 
             # 显示到UI上
-            _qimage = QImage(self.equalized_image, self.width, self.height, QImage.Format.Format_RGB888).scaledToWidth(200)
-            self.ui.label_processed_image.setPixmap(QPixmap.fromImage(_qimage))
+            _q_image = QImage(self.equalized_image, self.width, self.height, QImage.Format.Format_RGB888).scaledToWidth(256)
+            self.ui.label_processed_image.setPixmap(QPixmap.fromImage(_q_image))
 
         elif self.channels == 1:
 
@@ -148,8 +141,8 @@ class WidgetHistogram(QWidget):
             self.equalized_image = equalized_image_gray.copy()
 
             # 显示到UI上
-            _qimage = QImage(self.equalized_image, self.width, self.height, QImage.Format.Format_RGB888).scaledToWidth(200)
-            self.ui.label_processed_image.setPixmap(QPixmap.fromImage(_qimage))
+            _q_image = QImage(self.equalized_image, self.width, self.height, QImage.Format.Format_RGB888).scaledToWidth(200)
+            self.ui.label_processed_image.setPixmap(QPixmap.fromImage(_q_image))
 
         else:
             return -1
@@ -167,6 +160,6 @@ class WidgetHistogram(QWidget):
         self.histogram_y_image = np.zeros((1024, 1024, 3), dtype=np.uint8)
         for i, value in enumerate(self.histogram_y_channel):
             cv2.line(self.histogram_y_image, (i * 4, 1024), (i * 4, 1024 - int(value)), (255, 255, 255), 4)
-        _qimage = QImage(self.histogram_y_image, 1024, 1024, QImage.Format.Format_RGB888).scaledToWidth(200)
-        self.ui.label_y_channel_hist.setPixmap(QPixmap.fromImage(_qimage))
+        _q_image = QImage(self.histogram_y_image, 1024, 1024, QImage.Format.Format_RGB888).scaledToWidth(200)
+        self.ui.label_y_channel_hist.setPixmap(QPixmap.fromImage(_q_image))
         self.ui.label_7.setText("Y通道直方图，已均衡化处理")
