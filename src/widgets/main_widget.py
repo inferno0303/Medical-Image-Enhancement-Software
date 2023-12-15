@@ -1,6 +1,7 @@
 import os
 import cv2
 import numpy as np
+import pydicom
 from PyQt6.QtGui import QImage, QPixmap
 from PyQt6.QtWidgets import QWidget, QFileDialog
 
@@ -14,6 +15,7 @@ class Widget01(QWidget):
     """
     主窗口
     """
+
     def __init__(self):
         super().__init__()
 
@@ -45,13 +47,19 @@ class Widget01(QWidget):
     """
     pushButton_openImage的槽函数
     """
+
     def slot_open_image(self):
         # 弹出选择文件对话框
-        file_path, file_type = QFileDialog.getOpenFileName(QFileDialog(), '选择图片', '', '图像文件(*.jpg *.bmp *.png)')
+        file_path, file_type = QFileDialog.getOpenFileName(QFileDialog(), '选择图片', '',
+                                                           '文件(*.jpg *.bmp *.png)')
 
         # 判空
         if file_path == "" or file_type == "":
             return 0
+
+        # 用PyDICOM加载文件
+        # dicom = pydicom.dcmread(file_path, force=True)
+        # data = np.array(dicom.pixel_array)
 
         # 用opencv加载图像，并存储到numpy对象中
         self.original_image = cv2.imread(file_path)
@@ -106,6 +114,7 @@ class Widget01(QWidget):
     """
     pushButton_closeImage的槽函数
     """
+
     def slot_close_image(self):
         self.ui.label_original_image.setText("未打开图像")
         self.original_image = None
@@ -122,6 +131,7 @@ class Widget01(QWidget):
     """
     更新控件状态，例如enable/disable按钮
     """
+
     def _update_widget_state(self):
         # 如果已经打开了图像，将按钮设置为可以点击
         if self.original_image is not None:
@@ -138,6 +148,7 @@ class Widget01(QWidget):
     """
     pushButton_calcHistogram 的槽函数
     """
+
     def slot_calc_histogram(self):
         # 打开直方图模块控件
         if self.channels == 3:
@@ -151,6 +162,7 @@ class Widget01(QWidget):
     """
     pushButton_conv 的槽函数
     """
+
     def slot_conv(self):
         # 打开锐化和卷积模块
         if self.channels == 3:

@@ -96,3 +96,9 @@ python -m PyQt6.uic.pyuic .\src\widgets\widget_01.ui -o .\src\widgets\widget_01.
 - 修复：requirement.txt
 - 修复：build.py构建脚本
 - 第一次交付
+
+### 2023-12-15
+
+- 新增：锐化和卷积模块
+- 修复：界面问题
+- 第二次交付

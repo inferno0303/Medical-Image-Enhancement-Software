@@ -63,7 +63,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QGroupBox" name="groupBox_5">
+      <widget class="QGroupBox" name="groupBox_after_image">
        <property name="title">
         <string>处理后</string>
        </property>
@@ -184,11 +184,14 @@
            <property name="minimum">
             <number>1</number>
            </property>
+           <property name="maximum">
+            <number>19</number>
+           </property>
            <property name="singleStep">
             <number>2</number>
            </property>
            <property name="value">
-            <number>1</number>
+            <number>3</number>
            </property>
           </widget>
          </item>

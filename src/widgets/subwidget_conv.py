@@ -33,6 +33,9 @@ class WidgetConv(QWidget):
         """
         self.ui.comboBox_selector.currentIndexChanged.connect(self.on_combobox_changed)
         self.on_combobox_changed()
+        self.ui.pushButton_sobel_filter.clicked.connect(self.sobel_sharpen_filter)
+        self.ui.pushButton_laplace_filter.clicked.connect(self.laplacian_sharpen_filter)
+        self.ui.pushButton_custom_filter.clicked.connect(self.custom_filter)
 
         # 显示原图
         if self.channels == 3:
@@ -42,13 +45,10 @@ class WidgetConv(QWidget):
         else:
             return -1
 
-        print(self.ui.label_original_image.width(), self.ui.label_original_image.height())
-
         if self.ui.label_original_image.size().width() > self.ui.label_original_image.size().height():
             _q_image = _q_image.scaledToHeight(400)
         else:
             _q_image = _q_image.scaledToWidth(400)
-
         self.ui.label_original_image.setPixmap(QPixmap.fromImage(_q_image))
 
     def on_combobox_changed(self):
@@ -68,3 +68,45 @@ class WidgetConv(QWidget):
             self.ui.groupBox_sobel_filter.setEnabled(False)
             self.ui.groupBox_laplace_filter.setEnabled(False)
             self.ui.groupBox_custom_filter.setEnabled(True)
+
+    # Sobel算子：是对图像进行梯度计算，在灰度图中计算
+    def sobel_sharpen_filter(self):
+        if self.ui.radioButton_sobel_dx.isChecked():
+            after_image = cv2.Sobel(self.original_image_gray, ddepth=-1, scale=3, dx=1, dy=0)
+        elif self.ui.radioButton_sobel_dy.isChecked():
+            after_image = cv2.Sobel(self.original_image_gray, ddepth=-1, scale=3, dx=0, dy=1)
+        elif self.ui.radioButton_sobel_dx_dy.isChecked():
+            after_image = cv2.Sobel(self.original_image_gray, ddepth=-1, scale=3, dx=1, dy=1)
+        else:
+            return -1
+        _q_image = QImage(after_image, self.width, self.height, QImage.Format.Format_Grayscale8)
+        _q_image = _q_image.scaledToHeight(400)
+        self.ui.label_after_image.setPixmap(QPixmap.fromImage(_q_image))
+        self.ui.groupBox_after_image.setTitle("处理后：Sobel算子锐化预览")
+
+    # Laplacian算子：对图像进行拉普拉斯算子卷积计算，在灰度图中进行
+    def laplacian_sharpen_filter(self):
+        after_image = cv2.Laplacian(self.original_image_gray, ddepth=-1, scale=3,
+                                    ksize=int(self.ui.spinBox_laplace_ksize.value()))
+        _q_image = QImage(after_image, self.width, self.height, QImage.Format.Format_Grayscale8)
+        _q_image = _q_image.scaledToHeight(400)
+        self.ui.label_after_image.setPixmap(QPixmap.fromImage(_q_image))
+        self.ui.groupBox_after_image.setTitle("处理后：Laplacian算子锐化预览")
+
+    def custom_filter(self):
+        kernel = np.array(
+            [[self.ui.doubleSpinBox_custom_filter_1.value(), self.ui.doubleSpinBox_custom_filter_2.value(),
+              self.ui.doubleSpinBox_custom_filter_3.value()],
+             [self.ui.doubleSpinBox_custom_filter_4.value(), self.ui.doubleSpinBox_custom_filter_5.value(),
+              self.ui.doubleSpinBox_custom_filter_6.value()],
+             [self.ui.doubleSpinBox_custom_filter_7.value(), self.ui.doubleSpinBox_custom_filter_8.value(),
+              self.ui.doubleSpinBox_custom_filter_9.value()]], np.float32)
+        if self.channels == 3:
+            after_image = cv2.filter2D(src=self.original_image_rgb, ddepth=-1, kernel=kernel)
+            _q_image = QImage(after_image, self.width, self.height, QImage.Format.Format_RGB888)
+        else:
+            after_image = cv2.filter2D(src=self.original_image_gray, ddepth=-1, kernel=kernel)
+            _q_image = QImage(after_image, self.width, self.height, QImage.Format.Format_Grayscale8)
+        _q_image = _q_image.scaledToHeight(400)
+        self.ui.label_after_image.setPixmap(QPixmap.fromImage(_q_image))
+        self.ui.groupBox_after_image.setTitle("处理后：自定义卷积效果预览")
