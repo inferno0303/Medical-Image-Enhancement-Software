@@ -58,7 +58,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="pushButton">
+      <widget class="QPushButton" name="pushButton_saveImage">
        <property name="maximumSize">
         <size>
          <width>16777215</width>
@@ -66,7 +66,7 @@
         </size>
        </property>
        <property name="text">
-        <string>保存</string>
+        <string>保存图像</string>
        </property>
       </widget>
      </item>
@@ -146,7 +146,7 @@
          <property name="title">
           <string>处理后</string>
          </property>
-         <widget class="QLabel" name="label_result">
+         <widget class="QLabel" name="label_after_image">
           <property name="geometry">
            <rect>
             <x>10</x>
@@ -191,20 +191,20 @@
      <item>
       <widget class="QGroupBox" name="groupBox_2">
        <property name="title">
-        <string>打开/关闭文件</string>
+        <string>打开/关闭</string>
        </property>
        <layout class="QGridLayout" name="gridLayout">
+        <item row="0" column="2">
+         <widget class="QPushButton" name="pushButton_closeImage">
+          <property name="text">
+           <string>关闭图像</string>
+          </property>
+         </widget>
+        </item>
         <item row="0" column="0">
          <widget class="QPushButton" name="pushButton_openImage">
           <property name="text">
            <string>打开图像</string>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="1">
-         <widget class="QPushButton" name="pushButton_closeImage">
-          <property name="text">
-           <string>关闭图像</string>
           </property>
          </widget>
         </item>
@@ -217,37 +217,27 @@
         <string>功能模块</string>
        </property>
        <layout class="QGridLayout" name="gridLayout_2">
-        <item row="1" column="2">
+        <item row="2" column="3">
+         <widget class="QPushButton" name="pushButton_calcDynamicRange">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="text">
+           <string>功能6</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="3">
          <widget class="QPushButton" name="pushButton_calcNoiseLevel">
           <property name="enabled">
            <bool>false</bool>
           </property>
           <property name="text">
-           <string>功能</string>
+           <string>功能4</string>
           </property>
          </widget>
         </item>
-        <item row="1" column="0">
-         <widget class="QPushButton" name="pushButton_3">
-          <property name="enabled">
-           <bool>false</bool>
-          </property>
-          <property name="text">
-           <string>自适应增强处理</string>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="2">
-         <widget class="QPushButton" name="pushButton_conv">
-          <property name="enabled">
-           <bool>false</bool>
-          </property>
-          <property name="text">
-           <string>锐化和卷积处理模块</string>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="0">
+        <item row="0" column="1">
          <widget class="QPushButton" name="pushButton_calcHistogram">
           <property name="enabled">
            <bool>false</bool>
@@ -257,23 +247,33 @@
           </property>
          </widget>
         </item>
-        <item row="2" column="2">
-         <widget class="QPushButton" name="pushButton_calcDynamicRange">
-          <property name="enabled">
-           <bool>false</bool>
-          </property>
-          <property name="text">
-           <string>功能</string>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="0">
+        <item row="2" column="1">
          <widget class="QPushButton" name="pushButton_2">
           <property name="enabled">
            <bool>false</bool>
           </property>
           <property name="text">
-           <string>功能</string>
+           <string>功能5</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="1">
+         <widget class="QPushButton" name="pushButton_3">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="text">
+           <string>自适应增强处理</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="3">
+         <widget class="QPushButton" name="pushButton_conv">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="text">
+           <string>锐化和卷积处理模块</string>
           </property>
          </widget>
         </item>
@@ -283,7 +283,7 @@
      <item>
       <widget class="QGroupBox" name="groupBox_3">
        <property name="title">
-        <string>图像信息</string>
+        <string>文件详细信息</string>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_5">
         <item>

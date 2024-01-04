@@ -1,7 +1,9 @@
 import numpy as np
 import cv2
 from PyQt6.QtGui import QImage, QPixmap
-from PyQt6.QtWidgets import QWidget
+from PyQt6.QtWidgets import QWidget, QMessageBox
+from PyQt6.QtCore import pyqtSignal
+
 from src.ui.ui_subwidget_histogram import Ui_ui_subwidget_histogram
 
 
@@ -9,9 +11,11 @@ class WidgetHistogram(QWidget):
     """
     直方图模块
     """
-    def __init__(self, image):
 
-        # 该类继承于QWidget，实现窗口元素绘制
+    # 自定义信号，保存图像
+    save_signal = pyqtSignal(object)
+
+    def __init__(self, image):
         super().__init__()
 
         # 当前组件的state
@@ -29,6 +33,7 @@ class WidgetHistogram(QWidget):
         self.histogram_g_image = None
         self.histogram_b_image = None
         self.equalized_image = None
+        self.after_image = None
 
         self.ui = Ui_ui_subwidget_histogram()
         self.ui.setupUi(self)
@@ -41,14 +46,18 @@ class WidgetHistogram(QWidget):
         连接信号与槽
         """
         self.ui.pushButton_histogramEqualize.clicked.connect(self.histogram_equ)
+        self.ui.pushButton_cancel.clicked.connect(self.close)
+        self.ui.pushButton_ok.clicked.connect(self.ok)
 
         # 计算原图信息
-        self.height, self.width, self.channels = image.shape
-        if self.channels == 3:
+        if image.ndim == 2:
+            self.height, self.width = image.shape
+            self.channels = 1
+            self.original_image_gray = image.copy()
+        elif image.ndim == 3:
+            self.height, self.width, self.channels = image.shape
             self.original_image_rgb = image.copy()
             self.original_image_gray = cv2.cvtColor(self.original_image_rgb, cv2.COLOR_RGB2GRAY)
-        elif self.channels == 1:
-            self.original_image_gray = image.copy()
         else:
             return -1
 
@@ -102,6 +111,10 @@ class WidgetHistogram(QWidget):
                 cv2.line(self.histogram_b_image, (i * 4, 1024), (i * 4, 1024 - int(value)), (255, 100, 100), 4)
             _q_image = QImage(self.histogram_b_image, 1024, 1024, QImage.Format.Format_RGB888).scaledToWidth(200)
             self.ui.label_b_channel_hist.setPixmap(QPixmap.fromImage(_q_image))
+        elif self.channels == 1:
+            self.ui.label_r_channel_hist.setText("不是彩色图")
+            self.ui.label_g_channel_hist.setText("不是彩色图")
+            self.ui.label_b_channel_hist.setText("不是彩色图")
         else:
             return -1
         return 0
@@ -141,7 +154,7 @@ class WidgetHistogram(QWidget):
             self.equalized_image = equalized_image_gray.copy()
 
             # 显示到UI上
-            _q_image = QImage(self.equalized_image, self.width, self.height, QImage.Format.Format_RGB888).scaledToWidth(200)
+            _q_image = QImage(self.equalized_image, self.width, self.height, QImage.Format.Format_Grayscale8).scaledToWidth(200)
             self.ui.label_processed_image.setPixmap(QPixmap.fromImage(_q_image))
 
         else:
@@ -163,3 +176,26 @@ class WidgetHistogram(QWidget):
         _q_image = QImage(self.histogram_y_image, 1024, 1024, QImage.Format.Format_RGB888).scaledToWidth(200)
         self.ui.label_y_channel_hist.setPixmap(QPixmap.fromImage(_q_image))
         self.ui.label_7.setText("Y通道直方图，已均衡化处理")
+
+    def ok(self):
+        """
+        保存图像，pushButton_ok的槽函数
+        """
+        self.after_image = self.equalized_image
+        if self.after_image is None:
+            # 提示框
+            dialog = QMessageBox(self)
+            dialog.setWindowTitle("没有需要保存的图像")
+            dialog.setText("没有需要保存的图像，请在功能模块处理图像后再保存图像。")
+            dialog.setIcon(QMessageBox.Icon.Warning)
+            dialog.exec()
+            return -1
+
+        self.save_signal.emit(self.after_image)
+        self.hide()
+
+    def close(self):
+        """
+        关闭当前窗口，pushButton_cancel的槽函数
+        """
+        self.hide()

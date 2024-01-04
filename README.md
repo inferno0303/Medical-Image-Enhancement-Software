@@ -6,7 +6,7 @@
 
 ---
 > createTime: 2023-11-13  
-> updateTime: 2023-12-15  
+> updateTime: 2024-01-04 
 ---
 
 ## 介绍
@@ -65,8 +65,8 @@ pip install -r requirements.txt
 # 如果要把当前已安装的pip包写入到文本文件
 pip freeze > requirements.txt
 
-# 使用pyuic，这要求安装PyQt6
-python -m PyQt6.uic.pyuic .\src\widgets\widget_01.ui -o .\src\widgets\widget_01.py
+# 使用pyuic编译ui，这要求安装PyQt6
+python -m PyQt6.uic.pyuic .\src\ui\ui_main_widget.ui -o .\src\ui\ui_main_widget.py
 ```
 
 ### 目录结构
@@ -102,3 +102,9 @@ python -m PyQt6.uic.pyuic .\src\widgets\widget_01.ui -o .\src\widgets\widget_01.
 - 新增：锐化和卷积模块
 - 修复：界面问题
 - 第二次交付
+
+### 2024-01-04
+
+- 新增：读取dicom格式的图像
+- 新增：保存处理后的图像
+- 第三次交付
