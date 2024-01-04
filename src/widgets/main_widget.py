@@ -5,7 +5,7 @@ import numpy as np
 import pydicom
 from PyQt6.QtGui import QImage, QPixmap
 from PyQt6.QtWidgets import QWidget, QFileDialog, QMessageBox
-from PyQt6.QtCore import QFileInfo, QObject, pyqtSignal
+from PyQt6.QtCore import QFileInfo
 
 from src.ui.ui_main_widget import Ui_ui_main_widget
 from src.widgets.subwidget_histogram import WidgetHistogram
@@ -88,10 +88,8 @@ class Widget01(QWidget):
         elif file_suffix in ["dcm"]:
 
             # 用PyDICOM加载dcm文件
-            print(file_suffix, file_path)
             dcm_file = pydicom.dcmread(file_path, force=True)
-            pixel_array = np.array(dcm_file.pixel_array)
-            self.original_image = pixel_array.astype(np.uint8)
+            self.original_image = np.array(dcm_file.pixel_array).astype(np.uint8)
 
             # 获得图像的高度、宽度、颜色通道数
             self.height, self.width = self.original_image.shape
@@ -101,7 +99,6 @@ class Widget01(QWidget):
             elif self.original_image.ndim == 3:
                 self.channels = 3
                 self.original_image_rgb = self.original_image
-
         else:
             return -1
 
@@ -227,14 +224,6 @@ class Widget01(QWidget):
             _qimage = _qimage.scaledToWidth(self.ui.label_after_image.width())
         self.ui.label_after_image.setPixmap(QPixmap.fromImage(_qimage))
 
-        # 关闭子窗口
-        # if self._subwidget_conv is not None:
-        #     self._subwidget_conv.close()
-        #     self._subwidget_conv = None
-        # if self._subwidget_histogram is not None:
-        #     self._subwidget_histogram.close()
-        #     self._subwidget_conv = None
-
         return 0
 
     def slot_save_image(self):
@@ -242,7 +231,6 @@ class Widget01(QWidget):
         保存图像文件：pushButton_saveImage的槽函数
         """
         if self.after_image is None:
-            print("hello")
 
             # 提示框
             dialog = QMessageBox(self)
@@ -252,8 +240,8 @@ class Widget01(QWidget):
             dialog.exec()
 
         else:
-            # 弹出文件保存对话框
 
+            # 弹出文件保存对话框
             file_dialog = QFileDialog()
             default_file_name = "output_image_" + str(time.time())
             file_dialog.selectFile(default_file_name)
@@ -272,5 +260,5 @@ class Widget01(QWidget):
         dialog = QMessageBox(self)
         dialog.setWindowTitle("保存成功")
         dialog.setText("保存成功")
-        dialog.setIcon(QMessageBox.Icon.Warning)
+        dialog.setIcon(QMessageBox.Icon.Information)
         dialog.exec()
