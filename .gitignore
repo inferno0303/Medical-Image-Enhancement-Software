@@ -15,6 +15,7 @@ venv
 # python cache
 __pycache__
 *.pyc
+*.spec
 
 # exclude .gitignore
 !.gitignore

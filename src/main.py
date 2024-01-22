@@ -2,15 +2,15 @@ import sys
 
 from PyQt6.QtWidgets import QApplication
 
-# Widget实例
-from widgets.main_widget import Widget01
+# 主界面逻辑
+from widgets.main_widget_2 import MyMainWidget
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
 
-    # 显示widget_01
-    _widget_01 = Widget01()
-    _widget_01.show()
+    # 显示MainWidget
+    mw = MyMainWidget()
+    mw.show()
 
     # UI线程循环
     sys.exit(app.exec())
