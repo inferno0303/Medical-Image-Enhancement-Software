@@ -38,7 +38,7 @@ class HistWidget(QWidget):
 
     def set_image(self, image):
         """
-        设置图像到类成员对象中
+        设置图像到类成员变量中
         """
         # 计算图像信息
         result = self._calc_image_info(image=image)
@@ -181,10 +181,10 @@ class HistWidget(QWidget):
         else:
             return -1
 
-        # 保存处理后的图像到类成员对象
+        # 保存处理后的图像到类成员变量
         self.after_image = after_image
 
-        # 显示处理后的图像到UI，并把QImage放到类成员对象，以实现实时缩放
+        # 显示处理后的图像到UI，并把QImage放到类成员变量，以实现实时缩放
         self.after_image_qimage = self._display_image_to_label(image=after_image, label=self.ui.after_process_image_label)
 
         # 计算处理后的图像的直方图
@@ -230,7 +230,7 @@ class HistWidget(QWidget):
         # 在窗口显示时执行的逻辑代码
         if self.image is not None:
 
-            # 显示处理前的图像，并把QImage放到类成员对象，以实现实时缩放
+            # 显示处理前的图像，并把QImage放到类成员变量，以实现实时缩放
             self.qimage = self._display_image_to_label(image=self.image, label=self.ui.original_image_label)
 
             # 计算直方图统计

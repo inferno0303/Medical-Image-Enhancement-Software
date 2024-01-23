@@ -40,7 +40,7 @@ class ConvWidget(QWidget):
 
     def set_image(self, image):
         """
-        设置图像到类成员对象中
+        设置图像到类成员变量中
         """
         # 计算图像信息
         result = self._calc_image_info(image=image)
@@ -125,9 +125,23 @@ class ConvWidget(QWidget):
         result = self._calc_image_info(image=image)
         channel = result.get("channel")
 
-        # 卷积计算
         if channel == 3:
-            after_image = cv2.filter2D(src=image, ddepth=-1, kernel=kernel)
+
+            # 将 BGR 转换为 YUV 通道
+            image_yuv = cv2.cvtColor(image, cv2.COLOR_BGR2YUV)
+
+            # 分离 YUV 通道
+            [y, u, v] = cv2.split(image_yuv)
+
+            # 对Y通道进行卷积
+            y = cv2.filter2D(src=y, ddepth=-1, kernel=kernel)
+
+            # 合并 YUV 通道
+            after_yuv_image = cv2.merge([y, u, v])
+
+            # 转换回 BGR 通道
+            after_image = cv2.cvtColor(after_yuv_image, cv2.COLOR_YUV2BGR)
+
         elif channel == 1:
             after_image = cv2.filter2D(src=image, ddepth=-1, kernel=kernel)
         else:
@@ -259,7 +273,7 @@ class ConvWidget(QWidget):
 
         # 在窗口显示时执行的逻辑代码
         if self.image is not None:
-            # 显示处理前的图像，并把QImage放到类成员对象，以实现实时缩放
+            # 显示处理前的图像，并把QImage放到类成员变量，以实现实时缩放
             self.qimage = self._display_image_to_label(image=self.image, label=self.ui.original_image_label)
 
         # 需要调用父类的 showEvent

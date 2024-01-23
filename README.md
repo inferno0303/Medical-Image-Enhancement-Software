@@ -6,7 +6,7 @@
 
 ---
 > createTime: 2023-11-13  
-> updateTime: 2024-01-24 
+> updateTime: 2024-01-23 
 ---
 
 ## 介绍
@@ -75,6 +75,8 @@ python -m PyQt6.uic.pyuic .\src\ui\ui_main_widget.ui -o .\src\ui\ui_main_widget.
 
 `src/widgets/`：QtWidget控件实例
 
+`src/ui/`：Qt UI实例
+
 `build.py`：构建exe脚本
 
 `qt6-tools`：Qt6工具
@@ -111,8 +113,6 @@ python -m PyQt6.uic.pyuic .\src\ui\ui_main_widget.ui -o .\src\ui\ui_main_widget.
 
 ### 2024-01-23
 
-**新特性：升级Qt版本到6.6.1**
-
 **主界面：**
 
 - 重构：主界面
@@ -120,7 +120,6 @@ python -m PyQt6.uic.pyuic .\src\ui\ui_main_widget.ui -o .\src\ui\ui_main_widget.
 - 新增：主界面支持鼠标滚轮切换上一张、下一张图片
 - 新增：主界面支持点击上一张、下一张按钮切换图片
 - 新增：图像编辑处理后，可基于刚刚编辑后的图像继续进行其他编辑
-- 修复：在PET类型的图像（16bit动态范围图像）的乱码问题
 - 修复：文件信息框对图像动态范围识别不准确的问题
 - 修复：改善和新增一些地方的提示框，以及修复程序逻辑越界问题
 
@@ -135,3 +134,27 @@ python -m PyQt6.uic.pyuic .\src\ui\ui_main_widget.ui -o .\src\ui\ui_main_widget.
 
 - 重构：卷积与滤波模块
 - 新增：卷积与滤波模块新增预设更亮、更暗、锐化卷积核
+
+**图像去噪模块：**
+
+- 新增：均值滤波，支持设置卷积核大小
+- 新增：高斯滤波，支持设置卷积核大小
+- 新增：中值滤波，支持设置卷积核大小
+- 新增：双边滤波
+
+**图像评估模块：**
+
+- 新增：均方根（MSE）计算
+- 新增：峰值信噪比（PSNR）计算
+
+**一键自适应增强：**
+
+- 新增：对当前图像进行去噪、提升对比度、锐化操作
+
+**其他：**
+
+- 更新到Qt6.6.1核心库
+- 添加代码注释
+- 修复：PET类型的图像（16bit动态范围图像）的乱码问题
+
+- 第四次交付

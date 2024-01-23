@@ -15,13 +15,14 @@ from src.widgets.hist_widget_2 import HistWidget
 from src.widgets.conv_widget_2 import ConvWidget
 # 图像去噪模块
 from src.widgets.denoising_widget import DenoisingWidget
+# 图像评估模块
+from src.widgets.evaluation_widget import EvaluationWidget
 
 
 class MyMainWidget(QWidget):
     """
     主窗口逻辑
     """
-
     def __init__(self):
         super().__init__()
 
@@ -31,11 +32,9 @@ class MyMainWidget(QWidget):
 
         # 初始化子组件
         self.hist_widget = HistWidget()
-        self.hist_widget.send_after_image.connect(self.receive_after_image)
         self.conv_widget = ConvWidget()
-        self.conv_widget.send_after_image.connect(self.receive_after_image)
         self.denoising_widget = DenoisingWidget()
-        self.denoising_widget.send_after_image.connect(self.receive_after_image)
+        self.evaluation_widget = EvaluationWidget()
 
         # 当前组件的状态
         self.file_path = None
@@ -48,19 +47,24 @@ class MyMainWidget(QWidget):
         self.ui.close_image_btn.clicked.connect(self.close_image)
         self.ui.next_image_btn.clicked.connect(self.next_image)
         self.ui.prev_image_btn.clicked.connect(self.prev_image)
-        self.ui.hist_module_btn.clicked.connect(self.open_hist_widget)
-        self.ui.conv_module_btn.clicked.connect(self.open_conv_widget)
-        self.ui.denosing_module_btn.clicked.connect(self.open_denoising_widget)
+        self.ui.hist_module_btn.clicked.connect(self.on_open_hist_widget)
+        self.ui.conv_module_btn.clicked.connect(self.on_open_conv_widget)
+        self.ui.denosing_module_btn.clicked.connect(self.on_open_denoising_widget)
+        self.ui.evalueate_module_btn.clicked.connect(self.on_open_evaluation_widget)
+        self.ui.enhance_module_btn.clicked.connect(self.on_one_key_enhance)
+
+        # 连接子组件自定义信号与槽函数，用于从子组件接收处理后的图像
+        self.hist_widget.send_after_image.connect(self.receive_after_image)
+        self.conv_widget.send_after_image.connect(self.receive_after_image)
+        self.denoising_widget.send_after_image.connect(self.receive_after_image)
 
     def open_file_dialog(self):
         """
         弹出选择文件对话框
         """
-
         # 弹出选择文件对话框
         file_path, _ = QFileDialog.getOpenFileName(QFileDialog(), '选择文件', '',
                                                    'dcm文件或图像文件(*png *.jpg *.bmp *tif *.dcm)')
-
         if file_path:
             self.open_image(file_path)
 
@@ -68,7 +72,6 @@ class MyMainWidget(QWidget):
         """
         读取文件
         """
-
         # 记录当前打开的文件路径
         self.file_path = file_path
 
@@ -79,7 +82,7 @@ class MyMainWidget(QWidget):
         # 区分文件类型，如果是图像文件，就用opencv打开，如果是dcm文件，就用pydicom打开
         if file_suffix in ["png", "jpg", "bmp", "tif"]:
 
-            # 用opencv加载文件
+            # 用opencv加载文件，注意：不支持中文路径
             image = cv2.imread(file_path)
 
         elif file_suffix in ["dcm"]:
@@ -96,17 +99,25 @@ class MyMainWidget(QWidget):
         else:
             return -1
 
-        # 记录当前打开的图片
-        self.image = image
+        # 判断是否已经读取成功图像数组，在这里numpy数组需要用这个方法做判非空
+        if np.any(image):
 
-        # 显示文件信息到UI
-        self._display_file_detail_to_label(image=image, file_path=file_path)
+            # 记录当前打开的图片
+            self.image = image
 
-        # 显示图像到UI
-        self._display_image_to_label(image=image)
+            # 显示文件信息到UI
+            self._display_file_detail_to_label(image=image, file_path=file_path)
 
-        # 更新UI
-        self._update_btn_enable_or_disable()
+            # 显示图像到UI
+            self._display_image_to_label(image=image)
+
+            # 更新UI
+            self._update_btn_enable_or_disable()
+
+        # 读取图像出错
+        else:
+            QMessageBox.warning(self, '读取文件出错', f'请检查文件路径：{file_path}\n不能包含中文字符。', QMessageBox.StandardButton.Ok)
+            return -1
 
     def _update_btn_enable_or_disable(self):
         """
@@ -247,16 +258,16 @@ class MyMainWidget(QWidget):
         """
         获取同一个文件夹下的其他图像文件
         """
-
-        # 用于存储图像数据的数组
-        images = []
-
         if file_path:
+
             # 获取文件夹路径
             folder_path = os.path.dirname(file_path)
 
             # 获取文件夹内所有文件
             all_files = os.listdir(folder_path)
+
+            # 用于存储图像数据的数组
+            images = []
 
             # 遍历文件夹内所有文件
             for file_name in all_files:
@@ -271,26 +282,27 @@ class MyMainWidget(QWidget):
             return images
 
         else:
-            return images
+            return []
 
     def next_image(self):
         if self.file_path:
 
             # 获取同一个文件夹下的其他图像文件
             images = self._get_other_image_in_folder(self.file_path)
+            if images:
 
-            # 定位到当前打开的文件的下标
-            current_index = images.index(self.file_path)
+                # 定位到当前打开的文件的下标
+                current_index = images.index(self.file_path)
 
-            # 计算下一个文件的路径
-            if current_index + 1 > len(images) - 1:
-                next_index = 0
-            else:
-                next_index = current_index + 1
-            next_file_path = images[next_index]
+                # 计算下一个文件的路径
+                if current_index + 1 > len(images) - 1:
+                    next_index = 0
+                else:
+                    next_index = current_index + 1
+                next_file_path = images[next_index]
 
-            # 打开下一个文件
-            self.open_image(file_path=next_file_path)
+                # 打开下一个文件
+                self.open_image(file_path=next_file_path)
 
     def prev_image(self):
         if self.file_path:
@@ -310,7 +322,7 @@ class MyMainWidget(QWidget):
             # 打开上一个文件
             self.open_image(file_path=prev_file_path)
 
-    def open_hist_widget(self):
+    def on_open_hist_widget(self):
         """
         打开直方图模块窗口
         """
@@ -320,7 +332,7 @@ class MyMainWidget(QWidget):
             self.hist_widget.set_image(image=self.image.copy())
             self.hist_widget.show()
 
-    def open_conv_widget(self):
+    def on_open_conv_widget(self):
         """
         打开卷积与滤波模块窗口
         """
@@ -330,7 +342,7 @@ class MyMainWidget(QWidget):
             self.conv_widget.set_image(image=self.image.copy())
             self.conv_widget.show()
 
-    def open_denoising_widget(self):
+    def on_open_denoising_widget(self):
         """
         打开图像去噪模块
         """
@@ -339,6 +351,94 @@ class MyMainWidget(QWidget):
                 self.denoising_widget.close()
             self.denoising_widget.set_image(image=self.image.copy())
             self.denoising_widget.show()
+
+    def on_open_evaluation_widget(self):
+        """
+        打开图像评估模块
+        """
+        if self.image is not None:
+
+            # 处理重复点击的清空
+            if self.evaluation_widget.isVisible():
+                self.evaluation_widget.close()
+
+            # 传递处理后的图像给子组件
+            self.evaluation_widget.set_distorted_image(image=self.image.copy())
+
+            # 根据file_path将原图再次打开，并传递给子组件
+            if self.file_path is not None:
+                file_path = self.file_path
+                file_info = QFileInfo(file_path)
+                file_suffix = file_info.suffix()
+                if file_suffix in ["png", "jpg", "bmp", "tif"]:
+                    image = cv2.imread(file_path)
+                elif file_suffix in ["dcm"]:
+                    dcm = pydicom.dcmread(file_path, force=True)
+                    pixel = dcm.pixel_array
+                    image = np.array(pixel)
+                else:
+                    return -1
+                self.evaluation_widget.set_original_image(image=image)
+
+                # 显示窗口
+                self.evaluation_widget.show()
+
+    def on_one_key_enhance(self):
+        """
+        一键自适应增强：双边滤波->灰度线性均衡->锐化算子卷积
+        """
+        if self.image is not None:
+            image = self.image.copy()
+
+            # 计算图像信息
+            result = self._calc_image_info(image=image)
+            channel = result.get("channel")
+            depth = result.get("depth")
+
+            # 对非uint8动态范围的图像，归一化到uint8动态范围
+            if depth != 'uint8':
+                # 线性归一化到8位动态范围
+                image = ((image - image.min()) / (image.max() - image.min()) * 255).astype('uint8')
+
+            if channel == 3:
+
+                # 双边滤波
+                after_bilateral = cv2.bilateralFilter(src=image, d=25, sigmaColor=10 * 2, sigmaSpace=10 / 2)
+
+                # 灰度线性均衡
+                image_yuv = cv2.cvtColor(after_bilateral, cv2.COLOR_BGR2YUV)
+                [y, u, v] = cv2.split(image_yuv)
+                y = cv2.normalize(y, None, 0, 255, cv2.NORM_MINMAX)
+                after_yuv_image = cv2.merge([y, u, v])
+                after_normalize = cv2.cvtColor(after_yuv_image, cv2.COLOR_YUV2BGR)
+
+                # 锐化算子卷积
+                kernel = np.array([[0.0, -1.0, 0.0], [-1.0, 5.0, -1.0], [0.0, -1.0, 0.0]], np.float32)
+                image_yuv = cv2.cvtColor(after_normalize, cv2.COLOR_BGR2YUV)
+                [y, u, v] = cv2.split(image_yuv)
+                y = cv2.filter2D(src=y, ddepth=-1, kernel=kernel)
+                after_yuv_image = cv2.merge([y, u, v])
+                after_sharpen = cv2.cvtColor(after_yuv_image, cv2.COLOR_YUV2BGR)
+
+            elif channel == 1:
+
+                # 双边滤波
+                after_bilateral = cv2.bilateralFilter(src=image, d=25, sigmaColor=10 * 2, sigmaSpace=10 / 2)
+
+                # 灰度线性均衡
+                after_normalize = cv2.normalize(after_bilateral, None, 0, 255, cv2.NORM_MINMAX)
+
+                # 锐化算子卷积
+                kernel = np.array([[0.0, -1.0, 0.0], [-1.0, 5.0, -1.0], [0.0, -1.0, 0.0]], np.float32)
+                after_sharpen = cv2.filter2D(src=after_normalize, ddepth=-1, kernel=kernel)
+
+            else:
+                return -1
+
+            self._display_image_to_label(image=after_sharpen)
+            self.image = after_sharpen
+
+
 
     def receive_after_image(self, after_image):
         """
@@ -378,3 +478,12 @@ class MyMainWidget(QWidget):
                 self.ui.image_label.setPixmap(QPixmap.fromImage(_qimage.scaledToWidth(label_width)))
             else:
                 self.ui.image_label.setPixmap(QPixmap.fromImage(_qimage.scaledToHeight(label_height)))
+
+    @pyqtSlot('QShowEvent')
+    def showEvent(self, event):
+
+        # 在窗口显示时执行的逻辑代码
+        self._update_btn_enable_or_disable()
+
+        # 需要调用父类的 showEvent
+        super().showEvent(event)

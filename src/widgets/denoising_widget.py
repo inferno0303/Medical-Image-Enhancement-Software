@@ -24,12 +24,10 @@ class DenoisingWidget(QWidget):
 
         # 连接信号与槽
         self.ui.buttonGroup.buttonToggled.connect(self.on_select_mode)
-        # self.ui.darker_btn.clicked.connect(self.on_custom_conv_default_set)
-        # self.ui.lighter_btn.clicked.connect(self.on_custom_conv_default_set)
-        # self.ui.sharpen_btn.clicked.connect(self.on_custom_conv_default_set)
-        # self.ui.sobel_conv_btn.clicked.connect(lambda: self.sobel_conv(image=self.image))
-        # self.ui.laplace_conv_btn.clicked.connect(lambda: self.laplace_conv(image=self.image))
-        # self.ui.custom_conv_btn.clicked.connect(lambda: self.custom_conv(image=self.image))
+        self.ui.mean_filter_btn.clicked.connect(lambda: self.on_mean_filter(image=self.image))
+        self.ui.gaussian_filter_btn.clicked.connect(lambda: self.on_gaussian_filter(image=self.image))
+        self.ui.median_filter_btn.clicked.connect(lambda: self.on_median_filter(image=self.image))
+        self.ui.bilateral_filter_btn.clicked.connect(lambda: self.on_bilateral_filter(image=self.image))
         self.ui.ok_btn.clicked.connect(self.ok)
 
         # 当前组件状态
@@ -73,6 +71,73 @@ class DenoisingWidget(QWidget):
             self.ui.gaussian_filter_groupBox.setEnabled(False)
             self.ui.median_filter_groupBox.setEnabled(False)
             self.ui.bilateral_filter_groupBox.setEnabled(True)
+
+    def on_mean_filter(self, image):
+        """
+        均值滤波
+        """
+        kernel_size = int(self.ui.mean_filter_ksize.value())
+        if kernel_size % 2 == 0:
+            return -1
+        if np.any(image):
+            after_image = cv2.blur(src=image, ksize=(kernel_size, kernel_size))
+
+            # 保存处理后的图像到类成员对象
+            self.after_image = after_image
+
+            # 显示处理后的图像到UI，并把QImage放到类成员对象，以实现实时缩放
+            self.after_image_qimage = self._display_image_to_label(image=after_image,
+                                                                   label=self.ui.after_process_image_label)
+
+    def on_gaussian_filter(self, image):
+        """
+        高斯滤波
+        """
+        kernel_size = int(self.ui.mean_filter_ksize.value())
+        if kernel_size % 2 == 0:
+            return -1
+        if np.any(image):
+            after_image = cv2.GaussianBlur(src=image, ksize=(kernel_size, kernel_size), sigmaX=0, sigmaY=0)
+
+            # 保存处理后的图像到类成员对象
+            self.after_image = after_image
+
+            # 显示处理后的图像到UI，并把QImage放到类成员对象，以实现实时缩放
+            self.after_image_qimage = self._display_image_to_label(image=after_image,
+                                                                   label=self.ui.after_process_image_label)
+
+    def on_median_filter(self, image):
+        """
+        中值滤波
+        """
+        kernel_size = int(self.ui.mean_filter_ksize.value())
+        if kernel_size % 2 == 0:
+            return -1
+        if np.any(image):
+            after_image = cv2.medianBlur(src=image, ksize=kernel_size)
+
+            # 保存处理后的图像到类成员对象
+            self.after_image = after_image
+
+            # 显示处理后的图像到UI，并把QImage放到类成员对象，以实现实时缩放
+            self.after_image_qimage = self._display_image_to_label(image=after_image,
+                                                                   label=self.ui.after_process_image_label)
+
+    def on_bilateral_filter(self, image):
+        """
+        双边滤波
+        """
+        if np.any(image):
+
+            # 双边滤波
+            after_image = cv2.bilateralFilter(src=image, d=25, sigmaColor=10 * 2, sigmaSpace=10 / 2)
+
+            # 保存处理后的图像到类成员对象
+            self.after_image = after_image
+
+            # 显示处理后的图像到UI，并把QImage放到类成员对象，以实现实时缩放
+            self.after_image_qimage = self._display_image_to_label(image=after_image,
+                                                                   label=self.ui.after_process_image_label)
 
     def ok(self):
         if self.after_image is not None:
