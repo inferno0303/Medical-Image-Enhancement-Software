@@ -1,19 +1,19 @@
 # 医学图像增强软件
 
-中文名称：医学图像增强软件
+**中文名称：医学图像增强软件**
 
-英文名称：Medical-Image-Enhancement-Software
+**英文名称：Medical-Image-Enhancement-Software**
 
----
-> createTime: 2023-11-13  
-> updateTime: 2024-01-23 
----
+```
+createTime: 2023-11-13  
+updateTime: 2024-01-23 
+```
 
-## 介绍
+# 介绍
 
-软件名称：**基于pydicom与cv2的PET医学图像增强系统**
+基于pydicom与cv2的PET医学图像增强系统
 
-### 软件功能
+## 功能
 
 1、图像读取：
 
@@ -42,15 +42,13 @@
 - 图像增强处理
 - 结果展示
 
-## 技术
-
-### 软件技术架构
+## 技术栈
 
 - PyQt6
 - OpenCV
 - PyDICOM
 
-### 运行方法
+## 运行方法
 
 ```shell
 # 创建python虚拟环境
@@ -69,7 +67,7 @@ pip freeze > requirements.txt
 python -m PyQt6.uic.pyuic .\src\ui\ui_main_widget.ui -o .\src\ui\ui_main_widget.py
 ```
 
-### 目录结构
+## 目录结构
 
 `src/main.py`：主程序
 
@@ -81,7 +79,7 @@ python -m PyQt6.uic.pyuic .\src\ui\ui_main_widget.ui -o .\src\ui\ui_main_widget.
 
 `qt6-tools`：Qt6工具
 
-## 更新日志
+# 更新日志
 
 ### 2023-11-13
 
